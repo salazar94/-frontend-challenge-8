@@ -1,7 +1,9 @@
 let jobs;
 let cardContainer;
+let cardSearch;
 let filter;
 let filters = new Set();
+let parameterFilter;
 async function getJobs() {
     const response = await fetch('data.json');
     jobs = await response.json();
@@ -65,8 +67,34 @@ function setLanguages(languages) {
 
 
 function paint(jobs) {
+    cardSearch = document.querySelector('.parameters-filter');
+    if (filters.size > 0) {
+        cardSearch.classList.add('parameters-filter--active');
+        cardSearch.classList.remove('parameters-filter--deactive');
+    } else {
+        filter = jobs;
+        cardSearch.classList.remove('parameters-filter--active');
+        cardSearch.classList.add('parameters-filter--deactive');
+    }
     cardContainer.innerHTML = '';
+    console.log(jobs);
     jobs.forEach(job => cardContainer.innerHTML += setJob(job));
+    setSearch();
+
+}
+
+function paintSearchParameters(filter) {
+    return `<div class="search-parameter">
+    <p class="search-parameter__title"><span>${filter}</span></p>
+    <button class="search-parameter__button" data-element="${filter}" onclick="removeFilter(this)">X</button>
+  </div> `;
+}
+
+function setSearch() {
+    parameterFilter = document.querySelector('.parameter-filter__right');
+    parameterFilter.innerHTML = '';
+    filters.forEach(filter =>
+        parameterFilter.innerHTML += paintSearchParameters(filter));
 }
 
 window.onload = async () => {
@@ -89,12 +117,26 @@ function filterLevel(item) {
     paint(filter)
 }
 function filterLanguages(item) {
-    filters.add(item.dataset.language)    
+    filters.add(item.dataset.language)
     filter = filter.filter(job => Boolean(job.languages.filter(language => filters.has(language)).length));
     paint(filter)
 }
-function filterLanguages(item) {
-    filters.add(item.dataset.language)    
-    filter = filter.filter(job => Boolean(job.languages.filter(language => filters.has(language)).length));
+function filterTools(item) {
+    filters.add(item.dataset.tools)
+    console.log(item)
+    filter = filter.filter(job => Boolean(job.tools.filter(tool => filters.has(tool)).length));
     paint(filter)
+}
+
+function removeFilter(item) {
+    filters.delete(item.dataset.element);
+    filter = filter.filter(x => Object.values(x).flatMap(xt => xt).includes(item.dataset.element))
+    paint(filter)
+    setSearch();
+}
+
+function removeCardSearch() {
+    filters.clear();
+    filter = jobs;
+    paint(jobs);
 }
