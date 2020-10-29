@@ -115,29 +115,57 @@ function filterRole(item) {
   paint(filter)
 }
 function filterLevel(item) {
-  filters.add(item.dataset.level)
-  filter = filter.filter(job => filters.has(job.level));
+  filters.add(item.dataset.level)  
+  filter = [];
+  let afilter = jobs.map(x => Object.values(x).flatMap(xt => xt));
+  let count = 0;
+  afilter.forEach((fi,i) => {
+    filters.forEach(x => fi.includes(x) ? count++ : 0);
+    count == filters.size ? filter.push(jobs[i]) : null;
+    count = 0
+  })
   paint(filter)
 }
 function filterLanguages(item) {
-  filters.add(item.dataset.language)
-  filter = filter.filter(job => Boolean(job.languages.filter(language => filters.has(language)).length));
-  paint(filter)
+
+
+  filters.add(item.dataset.language)  
+  filter = [];
+  let afilter = jobs.map(x => Object.values(x).flatMap(xt => xt));
+
+  let count = 0;
+  afilter.forEach((fi,i) => {
+    filters.forEach(x => fi.includes(x) ? count++ : 0);
+    count == filters.size ? filter.push(jobs[i]) : null;
+    count = 0
+  })
+
+  paint(filter);
 }
 function filterTools(item) {
   filters.add(item.dataset.tools)
-  console.log(item)
-  filter = filter.filter(job => Boolean(job.tools.filter(tool => filters.has(tool)).length));
-  paint(filter)
+  let sx = 0;
+  filter = [];
+  let afilter = jobs.map(x => Object.values(x).flatMap(xt => xt));
+  let count = 0;
+  afilter.forEach((fi,i) => {
+    filters.forEach(x => fi.includes(x) ? count++ : 0);
+    count == filters.size ? filter.push(jobs[i]) : null;
+    count = 0
+  })
+  paint(filter);
 }
 
 function removeFilter(item) {
   filters.delete(item.dataset.element);
   filter = [];
   let afilter = jobs.map(x => Object.values(x).flatMap(xt => xt));
-  for (let indexs = 0; indexs < jobs.length; indexs++) {
-    filters.forEach(x => afilter[indexs].includes(x) ? filter.push(jobs[indexs]) : null)
-  }
+  let count = 0;
+  afilter.forEach((fi,i) => {
+    filters.forEach(x => fi.includes(x) ? count++ : 0);
+    count == filters.size ? filter.push(jobs[i]) : null;
+    count = 0
+  })
   paint(filter)
   setSearch();
 }
