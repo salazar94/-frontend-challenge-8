@@ -13,7 +13,7 @@ async function getJobs() {
 }
 
 
-function setJob({ languages, logo, position,featured, tools, company, level, isNew, postedAt, contract, location, role }) {
+function setJob({ languages, logo, position, featured, tools, company, level, isNew, postedAt, contract, location, role }) {
   return `
      <div class="card ${featured ? 'feature' : ''}">
     <div class="card-body">
@@ -67,19 +67,20 @@ function setLanguages(languages) {
 }
 
 
-function paint(jobs) {
+function paint(jobss) {
   cardSearch = document.querySelector('.parameters-filter');
   if (filters.size > 0) {
     cardSearch.classList.add('parameters-filter--active');
     cardSearch.classList.remove('parameters-filter--deactive');
   } else {
     filter = jobs;
+    jobss = jobs;
     cardSearch.classList.remove('parameters-filter--active');
     cardSearch.classList.add('parameters-filter--deactive');
   }
   cardContainer.innerHTML = '';
   console.log(jobs);
-  jobs.forEach(job => cardContainer.innerHTML += setJob(job));
+  jobss.forEach(job => cardContainer.innerHTML += setJob(job));
   setSearch();
 
 }
@@ -101,6 +102,7 @@ function setSearch() {
 window.onload = async () => {
   cardContainer = document.querySelector('.card-container');
   await getJobs();
+  Object.freeze(jobs);
   filter = jobs;
   paint(jobs);
 }
@@ -131,8 +133,11 @@ function filterTools(item) {
 
 function removeFilter(item) {
   filters.delete(item.dataset.element);
-  filter = jobs;
-  filter = filter.filter(x => Object.values(x).flatMap(xt => xt).includes(item.dataset.element))
+  filter = [];
+  let afilter = jobs.map(x => Object.values(x).flatMap(xt => xt));
+  for (let indexs = 0; indexs < jobs.length; indexs++) {
+    filters.forEach(x => afilter[indexs].includes(x) ? filter.push(jobs[indexs]) : null)
+  }
   paint(filter)
   setSearch();
 }
